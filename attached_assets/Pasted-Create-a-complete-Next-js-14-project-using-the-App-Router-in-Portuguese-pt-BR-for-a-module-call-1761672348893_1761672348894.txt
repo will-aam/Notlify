@@ -1,0 +1,55 @@
+Create a complete Next.js 14+ project (using the App Router) in Portuguese (pt-BR) for a module called **Notlify** — part of a larger system called **Stock**. The module focuses on managing and notifying item cost variations and markup insights. Users can manually input data or upload PDF documents (NF-e or "espelho de lançamento") to auto-fill item details like name, quantity, unit cost, total value, supplier, and date.
+
+### Project Requirements:
+- **Framework**: Next.js 14+ with App Router, React, TypeScript, Tailwind CSS.
+- **Language**: All UI text, labels, placeholders, buttons, and comments in **Portuguese (Brazil - pt-BR)**.
+- **Theme**: Dark mode by default. Include a **theme toggle** (sun/moon icon) in the header that switches between dark and light modes. Use `next-themes` for theme management. Store preference in localStorage.
+- **Pages/Routes** (create all as `.tsx` files in `app/`):
+  1. `/` (Home/Dashboard): Overview dashboard with:
+     - Summary cards: total items, items with cost increase >10%, items with negative markup.
+     - Table of recent items (mock data): columns: Item, Current Cost, Previous Cost, % Variation, Markup %, Status (alert icon if negative).
+     - Chart (use Recharts): line chart showing cost trend of top 5 items.
+     - Button to go to upload or manual entry.
+  2. `/upload`: Upload page:
+     - Drag-and-drop or file input for PDF.
+     - Preview area (show PDF thumbnail or first page).
+     - "Processar PDF" button (mock processing with spinner, show extracted mock data in a table below).
+     - Extracted fields: Item list with name, qty, unit cost, total, supplier, date.
+     - Save button (mock success toast).
+  3. `/manual`: Manual entry form:
+     - Form to add one item: name, supplier, quantity, unit cost, sale price, markup desired (%).
+     - Auto-calculate markup practiced.
+     - Table below to add multiple items (add/remove rows).
+     - Submit button (mock save).
+  4. `/items`: Full items list:
+     - Search bar, filter by supplier or markup status.
+     - Paginated table with all items from history.
+     - Export CSV button.
+  5. `/suppliers`: Suppliers overview:
+     - Cards or table: supplier name, total purchased, avg delivery time (mock), favorite toggle.
+     - Click to view details (mock modal).
+  6. `/settings`: Settings page:
+     - Theme toggle.
+     - Default markup % input.
+     - Notification preferences (mock).
+- **Layout**: Create a shared layout with:
+  - Sidebar navigation (collapsible on mobile) with links to all pages.
+  - Header with logo ("Notlify"), theme toggle, user avatar (mock).
+  - Responsive: mobile-first, Tailwind breakpoints.
+- **Components**: Create reusable components in `components/`:
+  - `ThemeToggle.tsx`
+  - `Sidebar.tsx`
+  - `Header.tsx`
+  - `DataTable.tsx` (with sorting)
+  - `UploadZone.tsx` (drag-drop)
+  - `ItemCard.tsx`
+  - `ChartLine.tsx` (wrapper for Recharts)
+  - `Toast.tsx` (for success/error)
+- **Mock Data**: Use hardcoded mock data in a `lib/mockData.ts` for all tables/charts. Include at least 20 sample items with realistic variations.
+- **PDF Handling Prep**: In `/upload`, prepare the form to send file to `/api/upload` (create the API route stub that returns mock extracted data). Do **not** implement actual PDF parsing yet — just mock the response.
+- **Database Prep**: Add Prisma schema stub in `prisma/schema.prisma` with models for `Item`, `Supplier`, `Document`. Run `prisma generate` in instructions. Do **not** connect to real DB — use mock data only. Add env example.
+- **Styling**: Tailwind with dark mode classes (`dark:`). Custom config with primary color #00d4ff.
+- **Accessibility**: ARIA labels, keyboard navigation.
+- **Output**: Provide the full project structure with all files and code. Include `package.json`, `tailwind.config.ts`, `next.config.mjs`, `tsconfig.json`, and setup instructions (pnpm install, pnpm dev). Use pnpm as default package manager.
+
+Generate the entire project ready to run with mock data, dark theme default, and fully in pt-BR.

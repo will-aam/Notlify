@@ -1,0 +1,75 @@
+// Schema Prisma para o Notlify
+// Este é um schema stub - não conectado a banco de dados real
+// Os dados são mockados na aplicação
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id               String   @id @default(cuid())
+  nome             String
+  fornecedorId     String
+  fornecedor       Supplier @relation(fields: [fornecedorId], references: [id])
+  quantidade       Int
+  custoUnitario    Float
+  custoAnterior    Float
+  precoVenda       Float
+  markupDesejado   Float
+  markupPraticado  Float
+  variacao         Float
+  valorTotal       Float
+  dataAtualizacao  DateTime @default(now())
+  status           String   @default("normal")
+  documentoId      String?
+  documento        Document? @relation(fields: [documentoId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([fornecedorId])
+  @@index([documentoId])
+  @@index([status])
+  @@index([dataAtualizacao])
+}
+
+model Supplier {
+  id                  String     @id @default(cuid())
+  nome                String
+  cnpj                String     @unique
+  totalComprado       Float      @default(0)
+  tempoMedioEntrega   Int        @default(5)
+  favorito            Boolean    @default(false)
+  ultimaCompra        DateTime?
+  totalItens          Int        @default(0)
+  items               Item[]
+  documentos          Document[]
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([favorito])
+  @@index([ultimaCompra])
+}
+
+model Document {
+  id            String   @id @default(cuid())
+  tipo          String
+  numero        String   @unique
+  fornecedorId  String
+  fornecedor    Supplier @relation(fields: [fornecedorId], references: [id])
+  dataEmissao   DateTime
+  valorTotal    Float
+  totalItens    Int      @default(0)
+  status        String   @default("pendente")
+  items         Item[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([fornecedorId])
+  @@index([status])
+  @@index([dataEmissao])
+}
