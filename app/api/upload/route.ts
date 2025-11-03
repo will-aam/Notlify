@@ -1,65 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import { PdfReader } from "pdfreader";
+export const runtime = "nodejs";
+
+function lerPdfBuffer(buffer: Buffer): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let textoBrutoCompleto = "";
+
+    new PdfReader(null).parseBuffer(buffer, (err, item) => {
+      if (err) {
+        reject(err);
+      } else if (!item) {
+        resolve(textoBrutoCompleto);
+      } else if (item && item.text) {
+        textoBrutoCompleto += item.text + " ";
+      }
+    });
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get("file") as File;
 
     if (!file) {
       return NextResponse.json(
-        { error: 'Nenhum arquivo enviado' },
+        { error: "Nenhum arquivo enviado" },
         { status: 400 }
       );
     }
 
-    const mockExtractedData = {
-      fornecedor: 'Distribuidora Elétrica Nacional',
-      data: new Date().toLocaleDateString('pt-BR'),
-      numeroNF: '000567890',
-      itens: [
-        {
-          id: '1',
-          nome: 'Cabo Elétrico 2,5mm² Preto',
-          quantidade: 500,
-          custoUnitario: 3.20,
-          valorTotal: 1600.00,
-        },
-        {
-          id: '2',
-          nome: 'Interruptor Simples 10A',
-          quantidade: 100,
-          custoUnitario: 4.50,
-          valorTotal: 450.00,
-        },
-        {
-          id: '3',
-          nome: 'Tomada 2P+T 10A',
-          quantidade: 150,
-          custoUnitario: 5.80,
-          valorTotal: 870.00,
-        },
-        {
-          id: '4',
-          nome: 'Lâmpada LED 9W',
-          quantidade: 200,
-          custoUnitario: 8.50,
-          valorTotal: 1700.00,
-        },
-        {
-          id: '5',
-          nome: 'Fita Isolante 19mm',
-          quantidade: 300,
-          custoUnitario: 3.80,
-          valorTotal: 1140.00,
-        },
-      ],
-    };
+    const bytes = await file.arrayBuffer();
+    const pdfBuffer = Buffer.from(bytes);
+    const textoBruto = await lerPdfBuffer(pdfBuffer);
+    console.log("--- INÍCIO DO TEXTO EXTRAÍDO DO PDF ---");
+    console.log(textoBruto);
+    console.log("--- FIM DO TEXTO EXTRAÍDO DO PDF ---");
 
-    return NextResponse.json(mockExtractedData);
+    return NextResponse.json({
+      message: "PDF lido com sucesso! (Texto bruto abaixo)",
+      rawText: textoBruto,
+    });
   } catch (error) {
-    console.error('Erro ao processar upload:', error);
+    console.error("Erro ao processar upload:", error);
     return NextResponse.json(
-      { error: 'Erro ao processar arquivo' },
+      { error: "Erro ao processar arquivo", details: (error as Error).message },
       { status: 500 }
     );
   }
